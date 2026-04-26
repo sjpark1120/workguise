@@ -404,7 +404,7 @@ export function SheetView({
           display: "flex",
           alignItems: "center",
           gap: 2,
-          padding: "0 60px",
+          padding: "0 10px",
           background: "#ffffff",
           fontSize: 13,
           color: "#202124",
@@ -804,7 +804,7 @@ export function SheetView({
             whiteSpace: "nowrap",
             paddingRight: 4
           }}>
-          Option+Q 토글
+          Alt + Q 토글
         </div>
       </div>
 
@@ -1156,7 +1156,8 @@ export function SheetView({
                         />
                       ) : null}
                       {comment.content ? (
-                        <span style={{ marginLeft: comment.dcconImageUrl ? 8 : 0 }}>
+                        <span
+                          style={{ marginLeft: comment.dcconImageUrl ? 8 : 0 }}>
                           {comment.content}
                         </span>
                       ) : null}
