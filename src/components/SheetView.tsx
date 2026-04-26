@@ -33,7 +33,7 @@ import {
   Undo2,
   WrapText
 } from "lucide-react"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 import type { DcHeadFilterOption } from "~contents/dcinside"
 import type { DcPostComment, DcPostRow } from "~parser/dcParser"
@@ -86,10 +86,19 @@ export function SheetView({
   onSelectPost,
   onToggleOverlay
 }: SheetViewProps) {
+  const COMMENT_PAGE_SIZE = 10
   const TOOLBAR_ICON_SIZE = 13
   const TOOLBAR_ICON_STROKE_WIDTH = 1.75
   const toolbarIconStroke = "#3c4043"
   const [selectedCell, setSelectedCell] = useState<SelectedCell | null>(null)
+  const [visibleCommentCount, setVisibleCommentCount] = useState(COMMENT_PAGE_SIZE)
+  const visibleComments = selectedPostComments.slice(0, visibleCommentCount)
+  const hasMoreComments = visibleCommentCount < selectedPostComments.length
+
+  useEffect(() => {
+    setVisibleCommentCount(COMMENT_PAGE_SIZE)
+  }, [selectedPost?.id])
+
   const selectedCellName = useMemo(() => {
     if (!selectedCell) return "A1"
 
@@ -879,7 +888,7 @@ export function SheetView({
               <div style={{ color: "#5f6368" }}>표시할 댓글이 없습니다.</div>
             ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {selectedPostComments.slice(0, 10).map((comment) => (
+                {visibleComments.map((comment) => (
                   <div
                     key={comment.id}
                     style={{
@@ -901,6 +910,22 @@ export function SheetView({
                     </div>
                   </div>
                 ))}
+                {hasMoreComments ? (
+                  <button
+                    onClick={() => setVisibleCommentCount((previousCount) => previousCount + COMMENT_PAGE_SIZE)}
+                    style={{
+                      height: 30,
+                      border: "1px solid #dadce0",
+                      borderRadius: 6,
+                      background: "#ffffff",
+                      color: "#3c4043",
+                      fontSize: 12,
+                      fontWeight: 500,
+                      cursor: "pointer"
+                    }}>
+                    댓글 더보기 ({selectedPostComments.length - visibleCommentCount}개 남음)
+                  </button>
+                ) : null}
               </div>
             )}
           </div>
