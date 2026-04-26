@@ -13,6 +13,7 @@ const TOGGLE_SHORTCUT_KEY = "q"
 const OVERLAY_Z_INDEX = 2147483646
 export const TRANSITION_COVER_ID = "__workguise-transition-cover__"
 export const TRANSITION_SESSION_KEY = "__workguise_transitioning__"
+const PENDING_HEAD_CODE_SESSION_KEY = "__workguise_pending_head_code__"
 
 export interface DcHeadFilterOption {
   code: number | null
@@ -60,9 +61,11 @@ function movePage({
 }
 
 function clickListKindTab({
-  kind
+  kind,
+  selectedHeadCode
 }: {
   kind: "all" | "recommend" | "notice"
+  selectedHeadCode: number | null
 }) {
   const buttonElements = Array.from(
     document.querySelectorAll<HTMLButtonElement>(".list_array_option .array_tab button")
@@ -81,6 +84,18 @@ function clickListKindTab({
   })
 
   if (!matchedButton) return
+
+  const preservedHeadUrl = buildListKindUrlWithHead({
+    buttonElement: matchedButton,
+    headCode: selectedHeadCode
+  })
+  if (preservedHeadUrl) {
+    clearPendingHeadCode()
+    showTransitionCover()
+    window.location.href = preservedHeadUrl
+    return
+  }
+
   showTransitionCover()
   matchedButton.click()
 }
@@ -125,6 +140,57 @@ function clearHeadFilter() {
 
   showTransitionCover()
   clearAnchor.click()
+}
+
+function buildListKindUrlWithHead({
+  buttonElement,
+  headCode
+}: {
+  buttonElement: HTMLButtonElement
+  headCode: number | null
+}): string | null {
+  if (headCode === null) return null
+
+  const onclickText = buttonElement.getAttribute("onclick") ?? ""
+  const rawTargetUrl = extractNavigationUrlFromOnclick({ onclickText })
+  if (!rawTargetUrl) return null
+
+  try {
+    const nextUrl = new URL(rawTargetUrl, window.location.origin)
+    const headParamKey = getPreferredHeadParamKey()
+    nextUrl.searchParams.set(headParamKey, String(headCode))
+    return nextUrl.toString()
+  } catch (_error) {
+    return null
+  }
+}
+
+function extractNavigationUrlFromOnclick({
+  onclickText
+}: {
+  onclickText: string
+}): string {
+  if (!onclickText) return ""
+
+  const locationAssignMatch = onclickText.match(/(?:location\.href|document\.location(?:\.href)?)\s*=\s*['"]([^'"]+)['"]/)
+  if (locationAssignMatch?.[1]) return locationAssignMatch[1]
+
+  const locationReplaceMatch = onclickText.match(/location\.replace\(\s*['"]([^'"]+)['"]\s*\)/)
+  if (locationReplaceMatch?.[1]) return locationReplaceMatch[1]
+
+  const openCallMatch = onclickText.match(/window\.open\(\s*['"]([^'"]+)['"]/)
+  if (openCallMatch?.[1]) return openCallMatch[1]
+
+  return ""
+}
+
+function getPreferredHeadParamKey(): string {
+  const headParamKeys = ["headid", "head", "search_head"]
+  const url = new URL(window.location.href)
+  const matchedKey = headParamKeys.find((paramKey) => url.searchParams.has(paramKey))
+  if (matchedKey) return matchedKey
+
+  return "headid"
 }
 
 function parseActiveListKindFromDocument(): "all" | "recommend" | "notice" {
@@ -190,6 +256,31 @@ function parseHeadFiltersFromDocument(): DcHeadFilterOption[] {
   return [{ code: null, label: "전체" }, ...uniqueFilters]
 }
 
+function savePendingHeadCode({
+  headCode
+}: {
+  headCode: number
+}) {
+  sessionStorage.setItem(PENDING_HEAD_CODE_SESSION_KEY, String(headCode))
+}
+
+function clearPendingHeadCode() {
+  sessionStorage.removeItem(PENDING_HEAD_CODE_SESSION_KEY)
+}
+
+function readPendingHeadCode(): number | null {
+  const rawHeadCode = sessionStorage.getItem(PENDING_HEAD_CODE_SESSION_KEY)
+  if (!rawHeadCode) return null
+
+  const parsedHeadCode = Number(rawHeadCode)
+  if (!Number.isFinite(parsedHeadCode)) {
+    clearPendingHeadCode()
+    return null
+  }
+
+  return parsedHeadCode
+}
+
 function DcinsideContentOverlay() {
   const [isOverlayVisible, setIsOverlayVisible] = useState(true)
   const [postRows, setPostRows] = useState<DcPostRow[]>([])
@@ -209,9 +300,24 @@ function DcinsideContentOverlay() {
     const nextRows = parseDcPostRowsFromDocument({ targetDocument: document })
     setPostRows(nextRows)
     setSelectedPost(nextRows[0] ?? null)
-    setSelectedListKind(parseActiveListKindFromDocument())
-    setSelectedHeadCode(parseActiveHeadCodeFromDocument())
+    const activeListKind = parseActiveListKindFromDocument()
+    const activeHeadCode = parseActiveHeadCodeFromDocument()
+    setSelectedListKind(activeListKind)
+    setSelectedHeadCode(activeHeadCode)
     setHeadFilters(parseHeadFiltersFromDocument())
+
+    const pendingHeadCode = readPendingHeadCode()
+    const shouldRestorePendingHeadCode = Boolean(
+      pendingHeadCode !== null &&
+      pendingHeadCode !== activeHeadCode
+    )
+    if (!shouldRestorePendingHeadCode) {
+      clearPendingHeadCode()
+      return
+    }
+
+    clearPendingHeadCode()
+    clickHeadFilter({ headCode: pendingHeadCode })
   }, [])
 
   useEffect(() => {
@@ -308,11 +414,17 @@ function DcinsideContentOverlay() {
         onSelectListKind={(kind) => {
           const isClickingSelectedKind = selectedListKind === kind
           const nextKind = isClickingSelectedKind ? "all" : kind
+          if (selectedHeadCode !== null) savePendingHeadCode({ headCode: selectedHeadCode })
+          else clearPendingHeadCode()
           setSelectedListKind(nextKind)
-          clickListKindTab({ kind: nextKind })
+          clickListKindTab({
+            kind: nextKind,
+            selectedHeadCode
+          })
         }}
         onSelectHeadFilter={(headCode) => {
           if (headCode === null) {
+            clearPendingHeadCode()
             setSelectedHeadCode(null)
             clearHeadFilter()
             return
@@ -320,11 +432,13 @@ function DcinsideContentOverlay() {
 
           const isClickingSelectedHead = selectedHeadCode === headCode
           if (isClickingSelectedHead) {
+            clearPendingHeadCode()
             setSelectedHeadCode(null)
             clearHeadFilter()
             return
           }
 
+          savePendingHeadCode({ headCode })
           setSelectedHeadCode(headCode)
           clickHeadFilter({ headCode })
         }}
