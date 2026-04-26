@@ -1105,10 +1105,9 @@ export function SheetView({
                     alt="post-image"
                     style={{
                       width: "100%",
+                      height: "auto",
                       borderRadius: 6,
                       border: "1px solid #eceff1",
-                      objectFit: "cover",
-                      maxHeight: 220,
                       background: "#f8f9fa"
                     }}
                   />
