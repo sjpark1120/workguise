@@ -3,7 +3,15 @@ import { sendToBackground } from "@plasmohq/messaging"
 import type { PlasmoCSConfig } from "plasmo"
 
 import { SheetView } from "~components/SheetView"
+import {
+  TRANSITION_COVER_ID,
+  TRANSITION_SESSION_KEY,
+  createTransitionCoverElement,
+  injectTransitionCoverStyle
+} from "~lib/transition-cover"
 import { parsePostBodyTextFromHtml, parseDcPostRowsFromDocument, type DcPostDetail, type DcPostRow } from "~parser/dcParser"
+
+export { TRANSITION_COVER_ID, TRANSITION_SESSION_KEY }
 
 export const config: PlasmoCSConfig = {
   matches: ["*://*.dcinside.com/*"]
@@ -11,8 +19,6 @@ export const config: PlasmoCSConfig = {
 
 const TOGGLE_SHORTCUT_KEY = "q"
 const OVERLAY_Z_INDEX = 2147483646
-export const TRANSITION_COVER_ID = "__workguise-transition-cover__"
-export const TRANSITION_SESSION_KEY = "__workguise_transitioning__"
 const PENDING_HEAD_CODE_SESSION_KEY = "__workguise_pending_head_code__"
 
 export interface DcHeadFilterOption {
@@ -26,15 +32,8 @@ function showTransitionCover() {
   const hasExistingCover = Boolean(document.getElementById(TRANSITION_COVER_ID))
   if (hasExistingCover) return
 
-  const coverElement = document.createElement("div")
-  coverElement.id = TRANSITION_COVER_ID
-  coverElement.style.cssText = [
-    "position:fixed!important",
-    "inset:0!important",
-    `z-index:${OVERLAY_Z_INDEX + 1}!important`,
-    "background:#ffffff!important",
-    "pointer-events:all!important"
-  ].join(";")
+  injectTransitionCoverStyle()
+  const coverElement = createTransitionCoverElement({ zIndex: OVERLAY_Z_INDEX + 1 })
   document.documentElement.appendChild(coverElement)
 }
 
