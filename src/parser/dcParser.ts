@@ -17,12 +17,15 @@ export interface DcPostComment {
   id: string
   author: string
   content: string
+  dcconImageUrl?: string
+  dcconAltText?: string
 }
 
 interface DcCommentApiItem {
   no?: string
   name?: string
   memo?: string
+  nicktype?: string
 }
 
 function parseCommentCount(rawText: string): number {
@@ -254,20 +257,34 @@ function parsePostCommentsFromDocument({
     .map((commentNode, index) => {
       const author =
         commentNode.querySelector<HTMLElement>(".gall_writer, .nickname, .nick, .ip")?.textContent?.trim() ?? "익명"
+      const dcconImageNode = commentNode.querySelector<HTMLImageElement>("img.written_dccon, img.dccon, img")
+      const dcconImageUrl = toAbsoluteUrl({
+        rawUrl:
+          dcconImageNode?.getAttribute("src") ??
+          dcconImageNode?.getAttribute("data-src") ??
+          ""
+      })
+      const dcconAltText =
+        dcconImageNode?.getAttribute("conalt")?.trim() ??
+        dcconImageNode?.getAttribute("alt")?.trim() ??
+        ""
       const content =
         commentNode.querySelector<HTMLElement>(".usertxt, .comment_memo, .txt, p")?.textContent?.trim() ??
         commentNode.textContent?.trim() ??
         ""
       const normalizedContent = content.replace(/\s+/g, " ").trim()
-      if (!normalizedContent) return null
+      const hasVisibleComment = Boolean(normalizedContent || dcconImageUrl)
+      if (!hasVisibleComment) return null
 
       return {
         id: `${index}-${author}`,
         author,
-        content: normalizedContent
+        content: normalizedContent,
+        dcconImageUrl: dcconImageUrl || undefined,
+        dcconAltText: dcconAltText || undefined
       }
     })
-    .filter((comment): comment is DcPostComment => Boolean(comment))
+    .filter(isNotNull)
 }
 
 export function parsePostBodyTextFromHtml({
@@ -318,19 +335,59 @@ function parseCommentsFromApi({
 
   return comments
     .map((comment, index) => {
+      if (isBlockedCommentNicktype({ nicktype: comment.nicktype })) return null
+
       const author = (comment.name ?? "익명").trim()
       const rawMemo = comment.memo ?? ""
       const memoAsText = htmlToPlainText({ htmlText: rawMemo })
       const content = memoAsText.replace(/\s+/g, " ").trim()
-      if (!content) return null
+      const dcconImage = parseDcconFromHtml({ htmlText: rawMemo })
+      const hasVisibleComment = Boolean(content || dcconImage.dcconImageUrl)
+      if (!hasVisibleComment) return null
 
       return {
         id: `${comment.no ?? index}-${author}`,
         author,
-        content
+        content,
+        dcconImageUrl: dcconImage.dcconImageUrl,
+        dcconAltText: dcconImage.dcconAltText
       }
     })
-    .filter((comment): comment is DcPostComment => Boolean(comment))
+    .filter(isNotNull)
+}
+
+function parseDcconFromHtml({
+  htmlText
+}: {
+  htmlText: string
+}): {
+  dcconImageUrl?: string
+  dcconAltText?: string
+} {
+  if (!htmlText.trim()) return {}
+
+  const htmlParser = new DOMParser()
+  const parsedDocument = htmlParser.parseFromString(`<div>${htmlText}</div>`, "text/html")
+  const dcconImageNode = parsedDocument.body.querySelector<HTMLImageElement>("img.written_dccon, img.dccon, img")
+  if (!dcconImageNode) return {}
+
+  const dcconImageUrl = toAbsoluteUrl({
+    rawUrl:
+      dcconImageNode.getAttribute("src") ??
+      dcconImageNode.getAttribute("data-src") ??
+      ""
+  })
+  if (!dcconImageUrl) return {}
+
+  const dcconAltText =
+    dcconImageNode.getAttribute("conalt")?.trim() ??
+    dcconImageNode.getAttribute("alt")?.trim() ??
+    ""
+
+  return {
+    dcconImageUrl,
+    dcconAltText: dcconAltText || undefined
+  }
 }
 
 function htmlToPlainText({
@@ -341,4 +398,32 @@ function htmlToPlainText({
   const htmlParser = new DOMParser()
   const parsedDocument = htmlParser.parseFromString(`<div>${htmlText}</div>`, "text/html")
   return parsedDocument.body.textContent?.trim() ?? ""
+}
+
+function toAbsoluteUrl({
+  rawUrl
+}: {
+  rawUrl: string
+}): string {
+  if (!rawUrl) return ""
+
+  try {
+    return new URL(rawUrl, window.location.origin).toString()
+  } catch (_error) {
+    return ""
+  }
+}
+
+function isNotNull<T>(value: T | null): value is T {
+  return value !== null
+}
+
+function isBlockedCommentNicktype({
+  nicktype
+}: {
+  nicktype?: string
+}): boolean {
+  if (!nicktype) return false
+
+  return nicktype.trim().toUpperCase() === "COMMENT_BOY"
 }

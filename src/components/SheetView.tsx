@@ -87,6 +87,7 @@ export function SheetView({
   onToggleOverlay
 }: SheetViewProps) {
   const COMMENT_PAGE_SIZE = 10
+  const DCCON_IMAGE_SIZE_PX = 44
   const TOOLBAR_ICON_SIZE = 13
   const TOOLBAR_ICON_STROKE_WIDTH = 1.75
   const toolbarIconStroke = "#3c4043"
@@ -1139,7 +1140,27 @@ export function SheetView({
                       {comment.author}
                     </div>
                     <div style={{ whiteSpace: "pre-wrap" }}>
-                      {comment.content}
+                      {comment.dcconImageUrl ? (
+                        <img
+                          src={comment.dcconImageUrl}
+                          alt={comment.dcconAltText ?? "dccon"}
+                          title={comment.dcconAltText ?? "dccon"}
+                          style={{
+                            width: DCCON_IMAGE_SIZE_PX,
+                            height: DCCON_IMAGE_SIZE_PX,
+                            objectFit: "contain",
+                            borderRadius: 4,
+                            background: "#ffffff",
+                            border: "1px solid #eceff1",
+                            verticalAlign: "middle"
+                          }}
+                        />
+                      ) : null}
+                      {comment.content ? (
+                        <span style={{ marginLeft: comment.dcconImageUrl ? 8 : 0 }}>
+                          {comment.content}
+                        </span>
+                      ) : null}
                     </div>
                   </div>
                 ))}
