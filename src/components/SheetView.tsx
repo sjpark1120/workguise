@@ -8,6 +8,8 @@ import { AgGridReact } from "ag-grid-react"
 import {
   BarChart3,
   Bold,
+  ChevronLeft,
+  ChevronRight,
   CloudCheck,
   DollarSign,
   Filter,
@@ -16,8 +18,8 @@ import {
   Link2,
   MessageSquare,
   Minus,
-  PaintBucket,
   Paintbrush,
+  PaintBucket,
   Percent,
   Plus,
   Printer,
@@ -27,8 +29,6 @@ import {
   Star,
   Strikethrough,
   Type,
-  ChevronLeft,
-  ChevronRight,
   Underline as UnderlineIcon,
   Undo2,
   WrapText
@@ -91,7 +91,8 @@ export function SheetView({
   const TOOLBAR_ICON_STROKE_WIDTH = 1.75
   const toolbarIconStroke = "#3c4043"
   const [selectedCell, setSelectedCell] = useState<SelectedCell | null>(null)
-  const [visibleCommentCount, setVisibleCommentCount] = useState(COMMENT_PAGE_SIZE)
+  const [visibleCommentCount, setVisibleCommentCount] =
+    useState(COMMENT_PAGE_SIZE)
   const visibleComments = selectedPostComments.slice(0, visibleCommentCount)
   const hasMoreComments = visibleCommentCount < selectedPostComments.length
 
@@ -450,47 +451,201 @@ export function SheetView({
           overflowY: "hidden"
         }}>
         {[
-          { icon: <Undo2 size={TOOLBAR_ICON_SIZE} strokeWidth={TOOLBAR_ICON_STROKE_WIDTH} />, title: "실행 취소" },
-          { icon: <Redo2 size={TOOLBAR_ICON_SIZE} strokeWidth={TOOLBAR_ICON_STROKE_WIDTH} />, title: "다시 실행" },
-          { icon: <Printer size={TOOLBAR_ICON_SIZE} strokeWidth={TOOLBAR_ICON_STROKE_WIDTH} />, title: "인쇄" },
-          { icon: <Paintbrush size={TOOLBAR_ICON_SIZE} strokeWidth={TOOLBAR_ICON_STROKE_WIDTH} />, title: "페인트 형식" },
+          {
+            icon: (
+              <Undo2
+                size={TOOLBAR_ICON_SIZE}
+                strokeWidth={TOOLBAR_ICON_STROKE_WIDTH}
+              />
+            ),
+            title: "실행 취소"
+          },
+          {
+            icon: (
+              <Redo2
+                size={TOOLBAR_ICON_SIZE}
+                strokeWidth={TOOLBAR_ICON_STROKE_WIDTH}
+              />
+            ),
+            title: "다시 실행"
+          },
+          {
+            icon: (
+              <Printer
+                size={TOOLBAR_ICON_SIZE}
+                strokeWidth={TOOLBAR_ICON_STROKE_WIDTH}
+              />
+            ),
+            title: "인쇄"
+          },
+          {
+            icon: (
+              <Paintbrush
+                size={TOOLBAR_ICON_SIZE}
+                strokeWidth={TOOLBAR_ICON_STROKE_WIDTH}
+              />
+            ),
+            title: "페인트 형식"
+          },
           { sep: true },
           { label: "100%▾", title: "확대/축소" },
           { sep: true },
-          { icon: <DollarSign size={TOOLBAR_ICON_SIZE} strokeWidth={TOOLBAR_ICON_STROKE_WIDTH} />, title: "통화 형식" },
-          { icon: <Percent size={TOOLBAR_ICON_SIZE} strokeWidth={TOOLBAR_ICON_STROKE_WIDTH} />, title: "백분율 형식" },
+          {
+            icon: (
+              <DollarSign
+                size={TOOLBAR_ICON_SIZE}
+                strokeWidth={TOOLBAR_ICON_STROKE_WIDTH}
+              />
+            ),
+            title: "통화 형식"
+          },
+          {
+            icon: (
+              <Percent
+                size={TOOLBAR_ICON_SIZE}
+                strokeWidth={TOOLBAR_ICON_STROKE_WIDTH}
+              />
+            ),
+            title: "백분율 형식"
+          },
           { label: ".0", title: "소수 줄이기" },
           { label: ".00", title: "소수 늘리기" },
           { label: "123▾", title: "형식 더보기" },
           { sep: true },
           { label: "기본값▾", title: "글꼴", wide: true },
           { sep: true },
-          { icon: <Minus size={TOOLBAR_ICON_SIZE} strokeWidth={TOOLBAR_ICON_STROKE_WIDTH} />, title: "글꼴 크기 줄이기" },
-          { label: "12", title: "글꼴 크기" },
-          { icon: <Plus size={TOOLBAR_ICON_SIZE} strokeWidth={TOOLBAR_ICON_STROKE_WIDTH} />, title: "글꼴 크기 늘리기" },
-          { sep: true },
-          { icon: <Bold size={TOOLBAR_ICON_SIZE} strokeWidth={TOOLBAR_ICON_STROKE_WIDTH} />, title: "굵게" },
-          { icon: <Italic size={TOOLBAR_ICON_SIZE} strokeWidth={TOOLBAR_ICON_STROKE_WIDTH} />, title: "기울임꼴" },
-          { icon: <UnderlineIcon size={TOOLBAR_ICON_SIZE} strokeWidth={TOOLBAR_ICON_STROKE_WIDTH} />, title: "밑줄" },
-          { icon: <Strikethrough size={TOOLBAR_ICON_SIZE} strokeWidth={TOOLBAR_ICON_STROKE_WIDTH} />, title: "취소선" },
-          { icon: <Type size={TOOLBAR_ICON_SIZE} strokeWidth={TOOLBAR_ICON_STROKE_WIDTH} />, title: "글자 색" },
-          { sep: true },
-          { icon: <PaintBucket size={TOOLBAR_ICON_SIZE} strokeWidth={TOOLBAR_ICON_STROKE_WIDTH} />, title: "채우기 색" },
           {
             icon: (
-              <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden>
-                <rect x="1.5" y="1.5" width="11" height="11" rx="1.5" stroke={toolbarIconStroke} strokeWidth="1.3" />
-                <path d="M1.5 5.5H12.5M1.5 8.5H12.5M5.5 1.5V12.5M8.5 1.5V12.5" stroke={toolbarIconStroke} strokeWidth="1.05" />
+              <Minus
+                size={TOOLBAR_ICON_SIZE}
+                strokeWidth={TOOLBAR_ICON_STROKE_WIDTH}
+              />
+            ),
+            title: "글꼴 크기 줄이기"
+          },
+          { label: "12", title: "글꼴 크기" },
+          {
+            icon: (
+              <Plus
+                size={TOOLBAR_ICON_SIZE}
+                strokeWidth={TOOLBAR_ICON_STROKE_WIDTH}
+              />
+            ),
+            title: "글꼴 크기 늘리기"
+          },
+          { sep: true },
+          {
+            icon: (
+              <Bold
+                size={TOOLBAR_ICON_SIZE}
+                strokeWidth={TOOLBAR_ICON_STROKE_WIDTH}
+              />
+            ),
+            title: "굵게"
+          },
+          {
+            icon: (
+              <Italic
+                size={TOOLBAR_ICON_SIZE}
+                strokeWidth={TOOLBAR_ICON_STROKE_WIDTH}
+              />
+            ),
+            title: "기울임꼴"
+          },
+          {
+            icon: (
+              <UnderlineIcon
+                size={TOOLBAR_ICON_SIZE}
+                strokeWidth={TOOLBAR_ICON_STROKE_WIDTH}
+              />
+            ),
+            title: "밑줄"
+          },
+          {
+            icon: (
+              <Strikethrough
+                size={TOOLBAR_ICON_SIZE}
+                strokeWidth={TOOLBAR_ICON_STROKE_WIDTH}
+              />
+            ),
+            title: "취소선"
+          },
+          {
+            icon: (
+              <Type
+                size={TOOLBAR_ICON_SIZE}
+                strokeWidth={TOOLBAR_ICON_STROKE_WIDTH}
+              />
+            ),
+            title: "글자 색"
+          },
+          { sep: true },
+          {
+            icon: (
+              <PaintBucket
+                size={TOOLBAR_ICON_SIZE}
+                strokeWidth={TOOLBAR_ICON_STROKE_WIDTH}
+              />
+            ),
+            title: "채우기 색"
+          },
+          {
+            icon: (
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 14 14"
+                fill="none"
+                aria-hidden>
+                <rect
+                  x="1.5"
+                  y="1.5"
+                  width="11"
+                  height="11"
+                  rx="1.5"
+                  stroke={toolbarIconStroke}
+                  strokeWidth="1.3"
+                />
+                <path
+                  d="M1.5 5.5H12.5M1.5 8.5H12.5M5.5 1.5V12.5M8.5 1.5V12.5"
+                  stroke={toolbarIconStroke}
+                  strokeWidth="1.05"
+                />
               </svg>
             ),
             title: "테두리"
           },
           {
             icon: (
-              <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden>
-                <rect x="1.5" y="2" width="5" height="10" rx="1.2" stroke={toolbarIconStroke} strokeWidth="1.3" />
-                <rect x="7.5" y="2" width="5" height="10" rx="1.2" stroke={toolbarIconStroke} strokeWidth="1.3" />
-                <path d="M6.5 7H7.5" stroke={toolbarIconStroke} strokeWidth="1.3" />
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 14 14"
+                fill="none"
+                aria-hidden>
+                <rect
+                  x="1.5"
+                  y="2"
+                  width="5"
+                  height="10"
+                  rx="1.2"
+                  stroke={toolbarIconStroke}
+                  strokeWidth="1.3"
+                />
+                <rect
+                  x="7.5"
+                  y="2"
+                  width="5"
+                  height="10"
+                  rx="1.2"
+                  stroke={toolbarIconStroke}
+                  strokeWidth="1.3"
+                />
+                <path
+                  d="M6.5 7H7.5"
+                  stroke={toolbarIconStroke}
+                  strokeWidth="1.3"
+                />
               </svg>
             ),
             title: "셀 병합"
@@ -498,29 +653,105 @@ export function SheetView({
           { sep: true },
           {
             icon: (
-              <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden>
-                <path d="M2 3H12M4 6H10M2 9H12M4 12H10" stroke={toolbarIconStroke} strokeWidth="1.3" strokeLinecap="round" />
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 14 14"
+                fill="none"
+                aria-hidden>
+                <path
+                  d="M2 3H12M4 6H10M2 9H12M4 12H10"
+                  stroke={toolbarIconStroke}
+                  strokeWidth="1.3"
+                  strokeLinecap="round"
+                />
               </svg>
             ),
             title: "수평 정렬"
           },
           {
             icon: (
-              <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden>
-                <path d="M3 2V12M7 4V10M11 2V12" stroke={toolbarIconStroke} strokeWidth="1.3" strokeLinecap="round" />
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 14 14"
+                fill="none"
+                aria-hidden>
+                <path
+                  d="M3 2V12M7 4V10M11 2V12"
+                  stroke={toolbarIconStroke}
+                  strokeWidth="1.3"
+                  strokeLinecap="round"
+                />
               </svg>
             ),
             title: "수직 정렬"
           },
-          { icon: <WrapText size={TOOLBAR_ICON_SIZE} strokeWidth={TOOLBAR_ICON_STROKE_WIDTH} />, title: "텍스트 줄바꿈" },
-          { icon: <RotateCw size={TOOLBAR_ICON_SIZE} strokeWidth={TOOLBAR_ICON_STROKE_WIDTH} />, title: "텍스트 회전" },
+          {
+            icon: (
+              <WrapText
+                size={TOOLBAR_ICON_SIZE}
+                strokeWidth={TOOLBAR_ICON_STROKE_WIDTH}
+              />
+            ),
+            title: "텍스트 줄바꿈"
+          },
+          {
+            icon: (
+              <RotateCw
+                size={TOOLBAR_ICON_SIZE}
+                strokeWidth={TOOLBAR_ICON_STROKE_WIDTH}
+              />
+            ),
+            title: "텍스트 회전"
+          },
           { sep: true },
-          { icon: <Link2 size={TOOLBAR_ICON_SIZE} strokeWidth={TOOLBAR_ICON_STROKE_WIDTH} />, title: "링크 삽입" },
-          { icon: <MessageSquare size={TOOLBAR_ICON_SIZE} strokeWidth={TOOLBAR_ICON_STROKE_WIDTH} />, title: "댓글 삽입" },
-          { icon: <BarChart3 size={TOOLBAR_ICON_SIZE} strokeWidth={TOOLBAR_ICON_STROKE_WIDTH} />, title: "차트 삽입" },
+          {
+            icon: (
+              <Link2
+                size={TOOLBAR_ICON_SIZE}
+                strokeWidth={TOOLBAR_ICON_STROKE_WIDTH}
+              />
+            ),
+            title: "링크 삽입"
+          },
+          {
+            icon: (
+              <MessageSquare
+                size={TOOLBAR_ICON_SIZE}
+                strokeWidth={TOOLBAR_ICON_STROKE_WIDTH}
+              />
+            ),
+            title: "댓글 삽입"
+          },
+          {
+            icon: (
+              <BarChart3
+                size={TOOLBAR_ICON_SIZE}
+                strokeWidth={TOOLBAR_ICON_STROKE_WIDTH}
+              />
+            ),
+            title: "차트 삽입"
+          },
           { sep: true },
-          { icon: <Filter size={TOOLBAR_ICON_SIZE} strokeWidth={TOOLBAR_ICON_STROKE_WIDTH} />, title: "필터 만들기" },
-          { icon: <Sigma size={TOOLBAR_ICON_SIZE} strokeWidth={TOOLBAR_ICON_STROKE_WIDTH} />, title: "함수" }
+          {
+            icon: (
+              <Filter
+                size={TOOLBAR_ICON_SIZE}
+                strokeWidth={TOOLBAR_ICON_STROKE_WIDTH}
+              />
+            ),
+            title: "필터 만들기"
+          },
+          {
+            icon: (
+              <Sigma
+                size={TOOLBAR_ICON_SIZE}
+                strokeWidth={TOOLBAR_ICON_STROKE_WIDTH}
+              />
+            ),
+            title: "함수"
+          }
         ].map((item, index) => {
           if ("sep" in item)
             return (
@@ -550,12 +781,14 @@ export function SheetView({
                 cursor: "default",
                 flexShrink: 0,
                 fontWeight: "bold" in item && item.bold ? 700 : 400,
-                fontStyle: "italic" in item && item.italic ? "italic" : "normal",
-                textDecoration: "underline" in item && item.underline
-                  ? "underline"
-                  : "strike" in item && item.strike
-                    ? "line-through"
-                    : "none",
+                fontStyle:
+                  "italic" in item && item.italic ? "italic" : "normal",
+                textDecoration:
+                  "underline" in item && item.underline
+                    ? "underline"
+                    : "strike" in item && item.strike
+                      ? "line-through"
+                      : "none",
                 fontSize: item.wide ? 12 : 13
               }}>
               {"icon" in item ? item.icon : item.label}
@@ -912,7 +1145,11 @@ export function SheetView({
                 ))}
                 {hasMoreComments ? (
                   <button
-                    onClick={() => setVisibleCommentCount((previousCount) => previousCount + COMMENT_PAGE_SIZE)}
+                    onClick={() =>
+                      setVisibleCommentCount(
+                        (previousCount) => previousCount + COMMENT_PAGE_SIZE
+                      )
+                    }
                     style={{
                       height: 30,
                       border: "1px solid #dadce0",
@@ -923,7 +1160,8 @@ export function SheetView({
                       fontWeight: 500,
                       cursor: "pointer"
                     }}>
-                    댓글 더보기 ({selectedPostComments.length - visibleCommentCount}개 남음)
+                    댓글 더보기 (
+                    {selectedPostComments.length - visibleCommentCount}개 남음)
                   </button>
                 ) : null}
               </div>
@@ -971,7 +1209,12 @@ export function SheetView({
               flexShrink: 0
             }}>
             <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-              <path d="M1 3h11M1 6.5h11M1 10h11" stroke="#444746" strokeWidth="1.6" strokeLinecap="round" />
+              <path
+                d="M1 3h11M1 6.5h11M1 10h11"
+                stroke="#444746"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+              />
             </svg>
           </div>
           {/* 탭 영역 */}
@@ -995,14 +1238,22 @@ export function SheetView({
                   background: tab.active ? "#ffffff" : "transparent",
                   borderLeft: "1px solid #c7c7c7",
                   borderRight: "1px solid #c7c7c7",
-                  borderTop: tab.active ? "2px solid #1a73e8" : "2px solid transparent",
+                  borderTop: tab.active
+                    ? "2px solid #1a73e8"
+                    : "2px solid transparent",
                   cursor: "default",
                   whiteSpace: "nowrap",
                   marginLeft: tab.active ? 0 : -1
                 }}>
                 {tab.label}
                 <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
-                  <path d="M1.5 3L4 5.5L6.5 3" stroke={tab.active ? "#1a73e8" : "#6e6e6e"} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                  <path
+                    d="M1.5 3L4 5.5L6.5 3"
+                    stroke={tab.active ? "#1a73e8" : "#6e6e6e"}
+                    strokeWidth="1.4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               </div>
             ))}
